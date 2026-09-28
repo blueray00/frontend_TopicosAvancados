@@ -7,9 +7,10 @@ function App() {
   const [produtos, setProdutos] = useState([])
   const [categorias, setCategorias] = useState([])
   const [categoriaSelecionada, setCategoriaSelecionada] = useState(null)
-
   const [textoBusca, setTextoBusca] = useState('')
   const [busca, setBusca] = useState('')
+  const [carrinho, setCarrinho] = useState([])
+  const [carrinhoAberto, setCarrinhoAberto] = useState(false)
 
   useEffect(() => {
     buscarProdutos()
@@ -50,6 +51,56 @@ function App() {
     setTextoBusca('')
   }
 
+  function adicionarAoCarrinho(produto) {
+    setCarrinho((itens) => {
+      const itemExistente = itens.find(
+        (item) => item.produtoID === produto.produtoID,
+      )
+
+      if (itemExistente?.quantidade >= Number(produto.estoque)) {
+        return itens
+      }
+
+      if (itemExistente) {
+        return itens.map((item) =>
+          item.produtoID === produto.produtoID
+            ? { ...item, quantidade: item.quantidade + 1 }
+            : item,
+        )
+      }
+
+      return [...itens, { produtoID: produto.produtoID, quantidade: 1 }]
+    })
+  }
+
+  function alterarQuantidade(produtoID, variacao) {
+    setCarrinho((itens) =>
+      itens
+        .map((item) =>
+          item.produtoID === produtoID
+            ? { ...item, quantidade: item.quantidade + variacao }
+            : item,
+        )
+        .filter((item) => item.quantidade > 0),
+    )
+  }
+
+  function removerDoCarrinho(produtoID) {
+    setCarrinho((itens) =>
+      itens.filter((item) => item.produtoID !== produtoID),
+    )
+  }
+
+  const quantidadeNoCarrinho = carrinho.reduce(
+    (total, item) => total + item.quantidade,
+    0,
+  )
+
+  const totalCarrinho = carrinho.reduce((total, item) => {
+    const produto = produtos.find((produto) => produto.produtoID === item.produtoID)
+    return total + (produto ? Number(produto.preco) * item.quantidade : 0)
+  }, 0)
+
   const produtosFiltrados = produtos.filter((produto) => {
     const pertenceCategoria =
       categoriaSelecionada === null ||
@@ -89,6 +140,16 @@ function App() {
             🔍
           </button>
         </form>
+        <button
+          className="botao-carrinho"
+          type="button"
+          onClick={() => setCarrinhoAberto(true)}
+          aria-label={`Abrir carrinho, ${quantidadeNoCarrinho} itens`}
+        >
+          <span aria-hidden="true">🛒</span>
+          Carrinho
+          <span className="contador-carrinho">{quantidadeNoCarrinho}</span>
+        </button>
       </header>
 
       <nav className="menu" aria-label="Categorias de produtos">
@@ -159,6 +220,11 @@ function App() {
                 <CardProduto
                   key={produto.produtoID}
                   produto={produto}
+                  aoAdicionar={adicionarAoCarrinho}
+                  quantidadeNoCarrinho={
+                    carrinho.find((item) => item.produtoID === produto.produtoID)
+                      ?.quantidade ?? 0
+                  }
                 />
               ))}
             </div>
@@ -166,6 +232,113 @@ function App() {
           )}
         </section>
       </main>
+
+      {carrinhoAberto && (
+        <>
+          <button
+            className="carrinho-overlay"
+            type="button"
+            aria-label="Fechar carrinho"
+            onClick={() => setCarrinhoAberto(false)}
+          />
+          <aside
+            className="painel-carrinho"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-carrinho"
+          >
+            <div className="cabecalho-carrinho">
+              <div>
+                <h2 id="titulo-carrinho">Meu carrinho</h2>
+                <span>{quantidadeNoCarrinho} itens</span>
+              </div>
+              <button
+                className="fechar-carrinho"
+                type="button"
+                aria-label="Fechar carrinho"
+                onClick={() => setCarrinhoAberto(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            {carrinho.length === 0 ? (
+              <p className="carrinho-vazio">Seu carrinho está vazio.</p>
+            ) : (
+              <>
+                <ul className="itens-carrinho">
+                  {carrinho.map((item) => {
+                    const produto = produtos.find(
+                      (produto) => produto.produtoID === item.produtoID,
+                    )
+
+                    if (!produto) return null
+
+                    return (
+                      <li className="item-carrinho" key={item.produtoID}>
+                        <img
+                          src={`/images/products/${
+                            {
+                              1: 'dolls',
+                              2: 'cars',
+                              3: 'games',
+                              4: 'plush',
+                              5: 'blocks',
+                            }[produto.categoriaID] ?? 'dolls'
+                          }.jpg`}
+                          alt=""
+                        />
+                        <div className="detalhes-item-carrinho">
+                          <div className="nome-item-carrinho">
+                            <h3>{produto.nome}</h3>
+                            <button
+                              type="button"
+                              aria-label={`Remover ${produto.nome} do carrinho`}
+                              onClick={() => removerDoCarrinho(produto.produtoID)}
+                            >
+                              Remover
+                            </button>
+                          </div>
+                          <strong>
+                            R$ {Number(produto.preco).toFixed(2)}
+                          </strong>
+                          <div className="controles-quantidade">
+                            <button
+                              type="button"
+                              aria-label={`Diminuir quantidade de ${produto.nome}`}
+                              onClick={() => alterarQuantidade(produto.produtoID, -1)}
+                            >
+                              −
+                            </button>
+                            <span>{item.quantidade}</span>
+                            <button
+                              type="button"
+                              aria-label={`Aumentar quantidade de ${produto.nome}`}
+                              disabled={item.quantidade >= Number(produto.estoque)}
+                              onClick={() => alterarQuantidade(produto.produtoID, 1)}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+                <div className="total-carrinho">
+                  <span>Total</span>
+                  <strong>
+                    R$ {totalCarrinho.toFixed(2)}
+                  </strong>
+                </div>
+                <p className="aviso-carrinho">
+                  Carrinho demonstrativo. A finalização do pedido ainda não está disponível.
+                </p>
+              </>
+            )}
+          </aside>
+        </>
+      )}
 
       <footer className="rodape">
         <div>

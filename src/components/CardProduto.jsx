@@ -1,51 +1,42 @@
-function CardProduto({ produto }) {
+const imagensPorCategoria = {
+  1: 'dolls',
+  2: 'cars',
+  3: 'games',
+  4: 'plush',
+  5: 'blocks',
+}
+
+function CardProduto({ produto, aoAdicionar, quantidadeNoCarrinho }) {
+  const esgotado = Number(produto.estoque) <= quantidadeNoCarrinho
+
   return (
     <article className="card">
-
       <div className="card-imagem">
-
-        <span className="selo">
-          DESTAQUE
-        </span>
-
-        <div className="brinquedo">
-          🧸
-        </div>
-
+        <img
+          src={`/images/products/${imagensPorCategoria[produto.categoriaID] ?? 'dolls'}.jpg`}
+          alt={`Foto ilustrativa de ${produto.nome}`}
+          loading="lazy"
+        />
+        <span className="selo">IMAGEM ILUSTRATIVA</span>
       </div>
-
       <div className="card-conteudo">
-
-        <div className="estrelas">
-          ★★★★★
-        </div>
-
         <h3>{produto.nome}</h3>
-
-        <p className="descricao">
-          {produto.descricao}
-        </p>
-
-        <div className="preco-antigo">
-          R$ {(Number(produto.preco) * 1.2).toFixed(2)}
-        </div>
-
+        <p className="descricao">{produto.descricao}</p>
         <div className="preco">
           R$ {Number(produto.preco).toFixed(2)}
         </div>
-
-        <div className="pix">
-          até 5% OFF no Pix
-        </div>
-
         <div className="card-final">
-          <span className="estoque">
-            {produto.estoque} disponíveis
-          </span>
+          <span className="estoque">{produto.estoque} disponíveis</span>
+          <button
+            className="adicionar-carrinho"
+            type="button"
+            disabled={esgotado}
+            onClick={() => aoAdicionar(produto)}
+          >
+            {esgotado ? 'Estoque esgotado' : 'Adicionar ao carrinho'}
+          </button>
         </div>
-
       </div>
-
     </article>
   )
 }

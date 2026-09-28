@@ -87,6 +87,29 @@ button {
   background: #1e478f;
 }
 
+.botao-carrinho {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: #222;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.contador-carrinho {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 50%;
+  background: #e62f86;
+  color: white;
+  font-size: 12px;
+}
+
 .menu {
   background: white;
   width: 100%;
@@ -179,13 +202,14 @@ main {
   height: 220px;
   background: #fafafa;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
 }
 
-.brinquedo {
-  font-size: 90px;
+.card-imagem img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .selo {
@@ -194,9 +218,9 @@ main {
   left: 12px;
   background: #b9e36f;
   color: #295600;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: bold;
-  padding: 6px 9px;
+  padding: 6px 8px;
   border-radius: 5px;
 }
 
@@ -204,16 +228,9 @@ main {
   padding: 16px;
 }
 
-.estrelas {
-  color: #ffc928;
-  font-size: 13px;
-  letter-spacing: 2px;
-}
-
 .card h3 {
   margin: 8px 0;
   font-size: 16px;
-  min-height: 38px;
 }
 
 .descricao {
@@ -223,13 +240,6 @@ main {
   min-height: 36px;
 }
 
-.preco-antigo {
-  color: #888;
-  font-size: 12px;
-  text-decoration: line-through;
-  margin-top: 10px;
-}
-
 .preco {
   color: #222;
   font-size: 22px;
@@ -237,20 +247,167 @@ main {
   margin-top: 3px;
 }
 
-.pix {
-  color: #27a745;
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 4px;
-}
-
 .card-final {
-  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .estoque {
   color: #666;
   font-size: 11px;
+}
+
+.adicionar-carrinho {
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 11px 12px;
+  background: #2858a7;
+  color: white;
+  font-weight: 700;
+}
+
+.adicionar-carrinho:hover:not(:disabled) {
+  background: #1e478f;
+}
+
+.adicionar-carrinho:disabled {
+  background: #b8bdc7;
+  cursor: not-allowed;
+}
+
+.carrinho-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  border: 0;
+  background: rgba(18, 24, 36, 0.45);
+}
+
+.painel-carrinho {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 100%);
+  height: 100vh;
+  height: 100dvh;
+  padding: 24px;
+  background: white;
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.14);
+}
+
+.cabecalho-carrinho,
+.nome-item-carrinho,
+.total-carrinho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cabecalho-carrinho {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.cabecalho-carrinho h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+.cabecalho-carrinho span,
+.aviso-carrinho {
+  color: #666;
+  font-size: 13px;
+}
+
+.fechar-carrinho {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #f2f3f5;
+  font-size: 25px;
+}
+
+.itens-carrinho {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  overflow: auto;
+  flex: 1;
+  margin: 0;
+  padding: 20px 0;
+  list-style: none;
+}
+
+.item-carrinho {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.item-carrinho img {
+  width: 84px;
+  height: 84px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.detalhes-item-carrinho {
+  display: grid;
+  gap: 8px;
+}
+
+.nome-item-carrinho h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.nome-item-carrinho button {
+  border: 0;
+  background: transparent;
+  color: #9f245f;
+  font-size: 12px;
+}
+
+.controles-quantidade {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controles-quantidade button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  font-size: 18px;
+}
+
+.controles-quantidade button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.total-carrinho {
+  padding-top: 18px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 17px;
+}
+
+.total-carrinho strong {
+  font-size: 21px;
+}
+
+.carrinho-vazio {
+  margin: auto 0;
+  color: #666;
+  text-align: center;
 }
 
 .sem-produtos {
@@ -327,6 +484,10 @@ main {
     flex-basis: 100%;
   }
 
+  .botao-carrinho {
+    margin-left: auto;
+  }
+
   .menu {
     justify-content: flex-start;
     gap: 22px;
@@ -348,5 +509,9 @@ main {
 
   .titulo-produtos h2 {
     font-size: 23px;
+  }
+
+  .painel-carrinho {
+    padding: 20px;
   }
 }

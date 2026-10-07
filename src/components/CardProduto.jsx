@@ -6,7 +6,7 @@ const imagensPorCategoria = {
   5: 'blocks',
 }
 
-function CardProduto({ produto, aoAdicionar, quantidadeNoCarrinho }) {
+function CardProduto({ produto, aoAdicionar, quantidadeNoCarrinho, aoEditar, aoExcluir, administrador }) {
   const esgotado = Number(produto.estoque) <= quantidadeNoCarrinho
 
   return (
@@ -19,14 +19,23 @@ function CardProduto({ produto, aoAdicionar, quantidadeNoCarrinho }) {
         />
         <span className="selo">IMAGEM ILUSTRATIVA</span>
       </div>
+
       <div className="card-conteudo">
         <h3>{produto.nome}</h3>
-        <p className="descricao">{produto.descricao}</p>
+
+        <p className="descricao">
+          {produto.descricao}
+        </p>
+
         <div className="preco">
           R$ {Number(produto.preco).toFixed(2)}
         </div>
+
         <div className="card-final">
-          <span className="estoque">{produto.estoque} disponíveis</span>
+          <span className="estoque">
+            {produto.estoque} disponíveis
+          </span>
+
           <button
             className="adicionar-carrinho"
             type="button"
@@ -36,6 +45,24 @@ function CardProduto({ produto, aoAdicionar, quantidadeNoCarrinho }) {
             {esgotado ? 'Estoque esgotado' : 'Adicionar ao carrinho'}
           </button>
         </div>
+
+        {administrador && (
+          <div className="acoes-admin">
+            <button
+              type="button"
+              onClick={() => aoEditar(produto)}
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              onClick={() => aoExcluir(produto)}
+            >
+              Excluir
+            </button>
+          </div>
+        )}
       </div>
     </article>
   )
